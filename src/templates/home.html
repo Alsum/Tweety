@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block head_title %}Welcome | {{ block.super }}{% endblock %}
+
+{% block content %}
+
+<div id="search_area">
+    <input id="screen_name"
+           class="form-control"
+           type="text" style="width:200px;"
+           placeholder="Enter twitter screen name"/>
+    <br>
+    <label for="num_tweets">Enter number of tweets: </label>
+    <input id="num_tweets"
+           class="form-control"
+           type="text" style="width:50px;"
+           placeholder="5"/>
+
+    <br><br>
+
+    <input id="getList" class="btn btn-success" type="submit" value="Get Tweets"/>
+
+
+    <br><br>
+    <span id="awesome-spinner" class="fa-stack fa-lg fa-5x">
+    <i class="fa fa-spinner fa-pulse fa-3x"></i>
+    </span>
+
+    <div id="results">
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block extrajs %}
+<script>
+    $(document).ready(function() {
+    $('#awesome-spinner').hide();
+    $('#getList').click(function() {
+        q = $('#screen_name').val();
+        num=$('#num_tweets').val();
+        $('#results').load('{% url 'get_tweets' %}?screen_name=' + q+ '&num_tweets='+num);
+    });
+
+    var mysearch = new LiveValidation("screen_name");
+    mysearch.add(Validate.Presence, {
+        failureMessage: "Can not be Empty!"
+    });
+});
+
+$(document).ajaxStart(function() {
+        $('#awesome-spinner').show();
+}).ajaxStop(function() {
+        $('#awesome-spinner').hide();
+});
+
+
+</script>
+
+
+{% endblock %}
