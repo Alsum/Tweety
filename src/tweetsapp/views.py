@@ -1,11 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.conf import settings
 from twython import Twython, TwythonError
 
 
 def get_tweeets(request):
     """
-    Get latest five tweets from the Twitter user specified as an input.
+    Get latest num tweets from the Twitter user specified as an input.
     """
     if request.is_ajax():
         screen_name = request.GET.get('screen_name', '')
@@ -29,3 +29,32 @@ def get_tweeets(request):
         return render(request, "result.html", context)
     else:
         return render(request, "home.html")
+
+
+def login_twitter(request):
+    APP_KEY = settings.TWITTER_CONSUMER_KEY
+    APP_SECRET = settings.TWITTER_CONSUMER_SECRET
+    twitter = Twython(APP_KEY, APP_SECRET)
+    auth = twitter.get_authentication_tokens(callback_url='http://127.0.0.1:8000/callback')
+    OAUTH_TOKEN = auth['oauth_token']
+    OAUTH_TOKEN_SECRET = auth['oauth_token_secret']
+    request.session['OAUTH_TOKEN_SECRET'] = OAUTH_TOKEN_SECRET
+    request.session['OAUTH_TOKEN'] = OAUTH_TOKEN
+    return redirect(auth['auth_url'])
+
+def callback(request):
+    oauth_verifier = request.GET['oauth_verifier']
+    oauth_token = request.GET['oauth_token']
+    if 'OAUTH_TOKEN_SECRET' in request.session:
+        OAUTH_TOKEN_SECRET = request.session['OAUTH_TOKEN_SECRET']
+    twitter = Twython(settings.TWITTER_CONSUMER_KEY,
+                      settings.TWITTER_CONSUMER_SECRET,
+                      oauth_token,OAUTH_TOKEN_SECRET)
+    final_step = twitter.get_authorized_tokens(oauth_verifier)
+    #Once you have the final user tokens, store them in a database
+    OAUTH_TOKEN = final_step['oauth_token']
+    OAUTH_TOKEN_SECRET = final_step['oauth_token_secret']
+    twitter = Twython(settings.TWITTER_CONSUMER_KEY,
+                  settings.TWITTER_CONSUMER_SECRET,
+                  OAUTH_TOKEN,OAUTH_TOKEN_SECRET)
+    return redirect('get_tweets')

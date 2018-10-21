@@ -1,0 +1,9 @@
+<h1>
+    your recent time line
+</h1>
+<ul>
+
+    {% for data in time_line %}
+    <li> {{data.text}}</li>
+    {%endfor%}
+</ul>

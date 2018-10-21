@@ -1,7 +1,7 @@
 # Tweety
 
 Django App Get the latest tweets for any screen name
-using latest twitter REST APi 1.1
+using latest twitter REST APi
 
 ### Version
 1.0
@@ -44,7 +44,7 @@ $ python manage.py runserver
 ```sh
 System check identified no issues (0 silenced).
 February 10, 2016 - 14:38:56
-Django version 1.8, using settings 'tweety.settings'
+Django version 1.11.4, using settings 'tweety.settings'
 Starting development server at http://127.0.0.1:8000/
 Quit the server with CONTROL-C.
 ```
